@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.filedialog
 import tkinter.colorchooser
+import tkinter.ttk as ttk
 
 import re
 from functools import partial
@@ -197,11 +198,6 @@ class Entry:
             return False, data
 
     def destroy(self):
-        self.label.destroy()
-        self.entry.destroy()
-        self.label_frame.destroy()
-        self.entry_frame.destroy()
-        self.container.pack_forget()
         self.container.destroy()
 
 
@@ -290,11 +286,6 @@ class FileDialog:
             return False, self.file_path
 
     def destroy(self):
-        self.file_label.destroy()
-        self.file_button.destroy()
-        self.file_label_frame.destroy()
-        self.file_button_frame.destroy()
-        self.container.pack_forget()
         self.container.destroy()
 
 
@@ -382,11 +373,6 @@ class FolderDialog:
             return False, self.folder_path
 
     def destroy(self):
-        self.file_label.destroy()
-        self.file_button.destroy()
-        self.file_label_frame.destroy()
-        self.file_button_frame.destroy()
-        self.container.pack_forget()
         self.container.destroy()
 
 
@@ -431,9 +417,6 @@ class Button:
         self.container.pack(side=tk.TOP, expand=tk.YES, fill=tk.BOTH)
 
     def destroy(self):
-        self.run_button.destroy()
-        self.run_button_frame.destroy()
-        self.container.pack_forget()
         self.container.destroy()
 
 
@@ -532,13 +515,6 @@ class ColorChooser:
             return True, f'{self.label_text} must be a valid color in #rrggbb format.'
 
     def destroy(self):
-        self.entry.destroy()
-        self.label.destroy()
-        self.button.destroy()
-        self.entry_frame.destroy()
-        self.button_frame.destroy()
-        self.label_frame.destroy()
-        self.container.pack_forget()
         self.container.destroy()
 
 
@@ -606,3 +582,41 @@ class RadioButton:
 
     def get(self):
         return False, self.mode.get()
+
+    def destroy(self):
+        self.container.destroy()
+
+
+class ProgressBar:
+    def __init__(self, master, row_color=None, container_bd=None, length=None, maximum=None, mode='determinate',
+                 color=None):
+
+        if styles_def:
+            if container_bd is None:
+                container_bd = styles.container_bd
+            if length is None:
+                length = styles.entry_width + styles.label_width
+            if color is None:
+                color = styles.progressbar_color
+
+        pb_style = ttk.Style()
+        pb_style.theme_use('clam')
+        pb_style.configure('pbstyle.Horizontal.TProgressbar', troughcolor=row_color, background=color,
+                           darkcolor=color, lightcolor=color, bordercolor=row_color)
+
+        self.pb_container = tk.Frame(master, bg=row_color, bd=container_bd)
+        self.pb = ttk.Progressbar(self.pb_container, style='pbstyle.Horizontal.TProgressbar',
+                                  length=length, mode=mode, maximum=maximum)
+        self.pb.pack(side=tk.TOP)
+        self.pb_container.pack(side=tk.TOP)
+
+    def destroy(self):
+        self.pb.destroy()
+        self.pb_container.destroy()
+
+    def increment(self):
+        self.pb['value'] += 1
+
+    def set_value(self, value):
+        self.pb['value'] = value
+
