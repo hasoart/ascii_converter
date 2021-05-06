@@ -28,7 +28,7 @@ if __name__ == '__main__':
     window.geometry('')
     window.resizable(False, False)
     window.protocol('WM_DELETE_WINDOW', on_closing)
-    window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file='Assets/ico.png'))
+    window.iconphoto(False, tk.PhotoImage(file='Assets/ico.png'))
 
     root = tk.Frame(window)
     root.pack()
