@@ -18,7 +18,8 @@ if __name__ == '__main__':
                  'Print from file': pff}
 
     window = tk.Tk()
-    window.title('  Select what to do')
+    window_title = 'Select program'
+    window.title(window_title)
 
     def on_closing():
         window.destroy()
@@ -27,11 +28,12 @@ if __name__ == '__main__':
     window.geometry('')
     window.resizable(False, False)
     window.protocol('WM_DELETE_WINDOW', on_closing)
+    window.tk.call('wm', 'iconphoto', window._w, tk.PhotoImage(file='Assets/ico.png'))
 
     root = tk.Frame(window)
     root.pack()
 
-    def get_run_function(f):
+    def get_run_function(f, title):
         def run():
             global root
             root.destroy()
@@ -42,7 +44,7 @@ if __name__ == '__main__':
             program_frame = tk.Frame(root)
             program_frame.pack(side=tk.RIGHT)
             f(program_frame)
-
+            window.title(title)
             back_button_frame = tk.Frame(root, width=10)
             back_button_frame.pack_propagate(0)
             back_button = tk.Button(back_button_frame, text='', command=draw_interface, bg=styles.back_button_color,
@@ -54,6 +56,7 @@ if __name__ == '__main__':
 
     def draw_interface():
         global root
+        window.title(window_title)
         root.destroy()
         root = tk.Frame(window)
         root.pack()
@@ -61,7 +64,7 @@ if __name__ == '__main__':
 
         for name, package in name_dict.items():
             row_color = next(row_colors)
-            cw.Button(root, row_color=row_color, button_text=name, command=get_run_function(package.main))
+            cw.Button(root, row_color=row_color, button_text=name, command=get_run_function(package.main, name))
 
 
     draw_interface()

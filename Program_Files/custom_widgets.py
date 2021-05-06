@@ -591,10 +591,10 @@ class RadioButton:
             button_frame = tk.Frame(self.container, width=button_width, height=height, bg=row_color)
             button_frame.pack_propagate(0)
             button = tk.Radiobutton(button_frame, text=options_labels[col], variable=self.mode, value=option,
-                                    command=partial(button_command, option), font=font, bg=row_color,
-                                    activebackground=row_color,
-                                    fg=button_font_color)
-            button.pack(side=tk.LEFT, )
+                                    font=font, fg=button_font_color, activeforeground=button_font_color,
+                                    bg=row_color, activebackground=row_color, highlightthickness=0, bd=0,
+                                    command=partial(button_command, option))
+            button.pack(side=tk.LEFT)
             buttons.append(button)
             button_frame.grid(row=0, column=col)
         if isinstance(default_value, int):
