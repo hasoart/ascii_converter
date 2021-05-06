@@ -12,6 +12,7 @@ import time
 from ffpyplayer.player import MediaPlayer
 
 from Program_Files import functions as fn
+from Program_Files import custom_widgets as cw
 from Program_Files.paths import *
 from Program_Files.styles import *
 
@@ -41,8 +42,6 @@ def check_settings(entry_dict, function_to_run):
 
     if 'auto' == settings.get('frame_width') == settings.get('frame_height'):
         error_message.append('Frame width and Frame height can\'t be \'auto\' simultaneously.')
-
-    # print(settings)
 
     if error_message:
         tk.messagebox.showerror(title='Error', message='\n'.join(error_message))
@@ -237,11 +236,6 @@ def convert_to_frames(master, file_path, mode, scale, frame_height, frame_width,
     name_len = len(str(length))
     success, image = vidcap.read()
 
-    pb_style = ttk.Style()
-    pb_style.theme_use('clam')
-    pb_style.configure('pbstyle.Horizontal.TProgressbar', troughcolor=row_color, background='#3dff7e',
-                       darkcolor='#3dff7e', lightcolor='#3dff7e', bordercolor=row_color)
-
     video_width = len(image[0])
     video_height = len(image)
 
@@ -260,11 +254,7 @@ def convert_to_frames(master, file_path, mode, scale, frame_height, frame_width,
             converted_width = frame_width
 
     def convert():
-        pb_container = tk.Frame(master, bg=row_color, bd=container_bd)
-        pb = ttk.Progressbar(pb_container, style='pbstyle.Horizontal.TProgressbar',
-                             length=entry_width + label_width, mode='determinate', maximum=length)
-        pb.pack(side=tk.TOP)
-        pb_container.pack(side=tk.TOP)
+        pb = cw.ProgressBar(master, row_color=row_color, maximum=length)
 
         nonlocal image, success
         for count in range(1, length + 1):
@@ -272,19 +262,15 @@ def convert_to_frames(master, file_path, mode, scale, frame_height, frame_width,
             image = cv2.resize(image, dsize=(converted_width, converted_height), interpolation=cv2.INTER_CUBIC)
             cv2.imwrite(png_name, image)
             success, image = vidcap.read()
-            pb['value'] += 1
+            pb.increment()
 
             if not success and count == length:
-                pb.stop()
-                pb.destroy()
-                pb_container.destroy()
                 tk.messagebox.showinfo(title='Success!', message='Extraction finished!')
+                pb.destroy()
                 break
             elif not success and count != length:
-                pb.stop()
-                pb.destroy()
-                pb_container.destroy()
                 tk.messagebox.showerror(title='Error!', message='Extraction failed due to unknown reasons!')
+                pb.destroy()
                 break
 
     threading.Thread(target=convert).start()
@@ -295,17 +281,8 @@ def convert_to_ascii(master, directory, mode, scale, frame_height, frame_width, 
 
     frames = os.listdir(directory)
 
-    pb_style = ttk.Style()
-    pb_style.theme_use('clam')
-    pb_style.configure('pbstyle.Horizontal.TProgressbar', troughcolor=row_color, background='#3dff7e',
-                       darkcolor='#3dff7e', lightcolor='#3dff7e', bordercolor=row_color)
-
     def convert():
-        pb_container = tk.Frame(master, bg=row_color, bd=container_bd)
-        pb = ttk.Progressbar(pb_container, style='pbstyle.Horizontal.TProgressbar',
-                             length=entry_width + label_width, mode='determinate', maximum=len(frames))
-        pb.pack(side=tk.TOP)
-        pb_container.pack(side=tk.TOP)
+        pb = cw.ProgressBar(master, row_color=row_color, maximum=len(frames))
 
         with open(result_files_path + folder_name + '.txt', 'w') as f:
             for frame in frames:
@@ -332,11 +309,9 @@ def convert_to_ascii(master, directory, mode, scale, frame_height, frame_width, 
 
                 image = cv2.resize(image, dsize=(n, m), interpolation=cv2.INTER_CUBIC)
                 f.write(fn.join_2d_array(pixels[(image * pixel_factor).astype(int)]))
-                pb['value'] += 1
+                pb.increment()
 
-            pb.stop()
-            pb.destroy()
-            pb_container.destroy()
             tk.messagebox.showinfo(title='Success!', message='Conversion finished!')
+            pb.destroy()
 
     threading.Thread(target=convert).start()

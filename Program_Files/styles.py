@@ -20,3 +20,5 @@ radiobutton_font_color = '#000000'
 
 back_button_color = '#69ff8c'
 back_button_active_color = '#29ff5a'
+
+progressbar_color = '#ff9191'
